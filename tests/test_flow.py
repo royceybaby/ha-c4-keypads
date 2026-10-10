@@ -77,7 +77,7 @@ async def test_user_flow(hass: HomeAssistant, keypad, fake_quirk, no_reload):
 async def test_import_yaml_and_store(hass: HomeAssistant, keypad, fake_quirk, no_reload, tmp_path):
     (tmp_path / "c4_keypads.yaml").write_text(
         f'"{IEEE}":\n  buttons:\n    - {{name: "Button 1", slots: [1], action: none, led: ha}}\n'
-        '    - {name: "Big", slots: [2, 3, 4, 5]}\n    - {name: "Dimmer", slots: [6], type: rocker}\n'
+        '    - {name: "Big", slots: [2, 3, 4]}\n    - {name: "Button 5", slots: [5]}\n    - {name: "Dimmer", slots: [6], type: rocker}\n'
     )
     hass.config.config_dir = str(tmp_path)
     entry = MockConfigEntry(domain=DOMAIN, data={}, options={})
@@ -85,12 +85,12 @@ async def test_import_yaml_and_store(hass: HomeAssistant, keypad, fake_quirk, no
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
     kp = entry.options["keypads"][IEEE]
-    assert kp["layout"] == "1-4-R"
+    assert kp["layout"] == "1-3-1-R"
     assert kp["buttons"][0] == {"name": "Button 1", "slots": [1], "action": "none", "led": "ha"}
     # store written, ZHA reloaded once
     await hass.async_block_till_done()
     store = hass.data[DOMAIN]["store"]
-    assert (await store.async_load())["keypads"][IEEE]["layout"] == "1-4-R"
+    assert (await store.async_load())["keypads"][IEEE]["layout"] == "1-3-1-R"
     assert no_reload.await_count == 1
     # blueprints installed
     assert (tmp_path / "blueprints/automation/control4_keypads/rocker_dimmer.yaml").is_file()

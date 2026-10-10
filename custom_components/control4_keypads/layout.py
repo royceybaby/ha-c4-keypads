@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import Any
 
-from .const import ACTIONS, KEEP, LED_MODES, NUM_SLOTS, ROCKER_SLOT
+from .const import ACTIONS, KEEP, LED_MODES, MAX_CAP_ROWS, NUM_SLOTS, ROCKER_SLOT
 
 ROCKER = "R"
 DEFAULT_PRESET = "1-1-1-1-1-R"
@@ -20,7 +20,7 @@ def _compositions(n: int) -> Iterator[tuple[int, ...]]:
     if n == 0:
         yield ()
         return
-    for first in range(1, n + 1):
+    for first in range(1, min(n, MAX_CAP_ROWS) + 1):
         for rest in _compositions(n - first):
             yield (first, *rest)
 
@@ -197,6 +197,8 @@ def validate_buttons(buttons: Any) -> list[dict[str, Any]]:
             range(slots[0], slots[-1] + 1)
         ):
             raise LayoutError(f"“{name}” must cover consecutive rows between 1 and 6")
+        if len(slots) > MAX_CAP_ROWS:
+            raise LayoutError(f"“{name}” is too tall: caps are single, double or triple")
         if used & set(slots):
             raise LayoutError(f"“{name}” overlaps another cap")
         used |= set(slots)

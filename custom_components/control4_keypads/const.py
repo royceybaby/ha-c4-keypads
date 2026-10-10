@@ -33,6 +33,8 @@ RAW_CLUSTER = 0xFC9A
 LOAD_BY_ENDPOINT = {1: 1, 11: 2}
 
 NUM_SLOTS = 6
+# Control4 Square caps come as single, double or triple height
+MAX_CAP_ROWS = 3
 ROCKER_SLOT = 6
 
 KEEP = "keep"

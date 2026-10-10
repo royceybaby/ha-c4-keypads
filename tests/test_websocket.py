@@ -91,13 +91,14 @@ async def test_save_and_reset(hass, ws, hass_storage):
 @pytest.mark.parametrize(
     ("buttons", "message"),
     [
-        ([{"name": "A", "slots": [1, 2, 3, 4, 5]}, {"name": "B", "slots": [5, 6]}], "overlaps"),
-        ([{"name": "A", "slots": [1, 2, 3, 4, 5]}], "Rows 6 have no cap"),
-        ([{"name": "A", "slots": [1, 2, 3, 4]}, {"name": "R", "slots": [5, 6], "type": "rocker"}], "row 6"),
+        ([{"name": "A", "slots": [1, 2, 3]}, {"name": "B", "slots": [3, 4, 5]}, {"name": "C", "slots": [6]}], "overlaps"),
+        ([{"name": "A", "slots": [1, 2, 3]}, {"name": "B", "slots": [4, 5]}], "Rows 6 have no cap"),
+        ([{"name": "A", "slots": [1, 2, 3]}, {"name": "B", "slots": [4]}, {"name": "R", "slots": [5, 6], "type": "rocker"}], "row 6"),
+        ([{"name": "A", "slots": [1, 2, 3, 4]}, {"name": "B", "slots": [5, 6]}], "too tall"),
         ([{"name": "A", "slots": [1, 2, 3]}, {"name": "a", "slots": [4, 5, 6]}], "Two caps"),
-        ([{"name": "A", "slots": [1, 3]}, {"name": "B", "slots": [2, 4, 5, 6]}], "consecutive"),
-        ([{"name": " ", "slots": [1, 2, 3, 4, 5, 6]}], "name"),
-        ([{"name": "A", "slots": [1, 2, 3, 4, 5, 6], "led": "load1", "led_on": "zz0000"}], "colour"),
+        ([{"name": "A", "slots": [1, 3]}, {"name": "B", "slots": [2]}, {"name": "C", "slots": [4, 5, 6]}], "consecutive"),
+        ([{"name": " ", "slots": [1, 2, 3]}, {"name": "B", "slots": [4, 5, 6]}], "name"),
+        ([{"name": "A", "slots": [1, 2, 3], "led": "load1", "led_on": "zz0000"}, {"name": "B", "slots": [4, 5, 6]}], "colour"),
     ],
 )
 async def test_save_invalid(ws, buttons, message):
@@ -112,5 +113,5 @@ async def test_save_invalid(ws, buttons, message):
 async def test_save_unknown_keypad(ws):
     client, *_ = ws
     res = await _call(client, type="control4_keypads/save", ieee="00:11:22:33:44:55:66:77",
-                      buttons=[{"name": "A", "slots": [1, 2, 3, 4, 5, 6]}])
+                      buttons=[{"name": "A", "slots": [1, 2, 3]}, {"name": "B", "slots": [4, 5, 6]}])
     assert res["error"]["code"] == "not_found"

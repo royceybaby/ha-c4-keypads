@@ -4,6 +4,7 @@
 // commands; the integration then reloads ZHA and the keypad gets its settings.
 
 const ROWS = 6;
+const MAX_CAP_ROWS = 3; // Control4 Square caps: single, double or triple
 const ACTION_LABELS = {
   keep: "Keep current setting",
   none: "Nothing (HA only)",
@@ -20,7 +21,7 @@ const LED_LABELS = {
   load1: "Shows load 1",
   load2: "Shows load 2",
 };
-const SIZE_LABELS = { 1: "Single", 2: "Double", 3: "Triple", 4: "Quad", 5: "5-row", 6: "Full height" };
+const SIZE_LABELS = { 1: "Single", 2: "Double", 3: "Triple" };
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -51,7 +52,7 @@ function normalize(caps) {
   while (row <= ROWS) {
     let cap = byStart.get(row);
     if (!cap) cap = newCap(row, [...out, ...caps.filter((c) => c.start > row)]);
-    cap.size = Math.max(1, Math.min(cap.size, ROWS - row + 1));
+    cap.size = Math.max(1, Math.min(cap.size, MAX_CAP_ROWS, ROWS - row + 1));
     if (cap.rocker && row !== ROWS) cap.rocker = false;
     if (cap.rocker) cap.size = 1;
     out.push(cap);
@@ -292,11 +293,11 @@ class Control4KeypadsPanel extends HTMLElement {
       </div>`;
     }
     const sizes = [];
-    for (let s = 1; s <= ROWS - r + 1; s++) {
+    for (let s = 1; s <= Math.min(MAX_CAP_ROWS, ROWS - r + 1); s++) {
       const label = s === 1 ? "Single" : `${SIZE_LABELS[s]} (rows ${r}–${r + s - 1})`;
       sizes.push(`<option value="${s}" ${!cap.rocker && cap.size === s ? "selected" : ""}>${label}</option>`);
     }
-    if (r === ROWS) sizes.push(`<option value="R" ${cap.rocker ? "selected" : ""}>Rocker (up / down)</option>`);
+    if (r === ROWS) sizes.push(`<option value="R" ${cap.rocker ? "selected" : ""}>Up / down rocker</option>`);
     const opt = (labels, value) => Object.entries(labels)
       .map(([k, v]) => `<option value="${k}" ${k === value ? "selected" : ""}>${esc(v)}</option>`).join("");
     const extras = [];

@@ -9,7 +9,8 @@ from custom_components.control4_keypads.layout import (
 
 def test_presets():
     presets = all_presets()
-    assert len(presets) == 16 + 32
+    assert len(presets) == 13 + 24  # caps of 1-3 rows, with / without rocker
+    assert all(int(p) <= 3 for k in presets for p in k.split("-") if p != "R")
     assert presets[0] == "1-1-1-1-1-R"
     assert len(set(presets)) == len(presets)
     for p in presets:
@@ -45,4 +46,7 @@ def test_legacy_yaml():
     out = buttons_from_legacy_yaml(raw)
     btns = out["00:0f:ff:00:00:b4:ba:7f"]["buttons"]
     assert btns[2] == {"name": "Dimmer", "slots": [6], "type": "rocker", "led_on": "ff0000"}
-    assert preset_from_buttons(btns) == "1-4-R"
+    assert preset_from_buttons(btns) is None  # a 4-row cap doesn't exist
+    btns[1]["slots"] = [2, 3, 4]
+    btns.insert(2, {"name": "B5", "slots": [5]})
+    assert preset_from_buttons(btns) == "1-3-1-R"

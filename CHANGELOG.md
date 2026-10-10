@@ -10,6 +10,8 @@
 - Websocket API behind the panel: `control4_keypads/list`, `save` and `reset`.
   Layouts are checked on the server (rows tiled, rocker only in row 6,
   unique names, valid colours).
+- Caps are single, double or triple (plus the up / down rocker in row 6);
+  taller caps are rejected.
 - Default names follow the row ("Button 3" for a cap starting in row 3).
 - Manifest owner and links point at github.com/Royceybaby/Control4KeypadsForHA.
 

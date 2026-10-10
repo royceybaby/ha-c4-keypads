@@ -65,7 +65,7 @@ Open **C4 Keypads** in the sidebar, or press **Configure** on the integration.
 
 1. Pick the keypad. The list shows its area too.
 2. Work down the six rows, top to bottom. For the cap in each row, choose:
-   - **Cap:** single, double, triple and so on, or **Rocker** (row 6 only).
+   - **Cap:** single, double or triple, or the **up / down rocker** (row 6 only).
      A cap covering several rows disables the rows underneath it, and a
      picture of the keypad updates as you go. Click a cap in the picture to
      jump to it.
