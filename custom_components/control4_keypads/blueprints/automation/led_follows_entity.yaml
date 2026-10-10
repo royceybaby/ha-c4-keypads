@@ -1,0 +1,63 @@
+# control4_keypads blueprint v2
+blueprint:
+  name: Control4 keypad – button LED shows an entity's state
+  description: >-
+    Sets a keypad button LED's colour from whether something is on or off
+    (a light, switch, scene helper, media player…). Set the button's LED to
+    "Home Assistant controls it" in Control4 Keypads first.
+  domain: automation
+  source_url: https://github.com/Royceybaby/Control4KeypadsForHA/blob/main/custom_components/control4_keypads/blueprints/automation/led_follows_entity.yaml
+  input:
+    led:
+      name: Button LED
+      description: The LED light entity of the keypad button.
+      selector:
+        entity:
+          domain: light
+          integration: zha
+    source:
+      name: Entity to show
+      selector:
+        entity: {}
+    on_color:
+      name: Colour when on
+      default: [255, 255, 255]
+      selector:
+        color_rgb:
+    off_color:
+      name: Colour when off
+      description: Black turns the LED off.
+      default: [0, 0, 0]
+      selector:
+        color_rgb:
+
+mode: restart
+
+triggers:
+  - trigger: state
+    entity_id: !input source
+  - trigger: homeassistant
+    event: start
+
+variables:
+  source: !input source
+  on_color: !input on_color
+  off_color: !input off_color
+  is_on: "{{ states(source) not in ['off', 'unavailable', 'unknown', 'idle', 'standby', 'closed', 'not_home', 'paused'] }}"
+  color: "{{ on_color if is_on else off_color }}"
+
+actions:
+  - if:
+      - condition: template
+        value_template: "{{ color | sum == 0 }}"
+    then:
+      - action: light.turn_off
+        target:
+          entity_id: !input led
+    else:
+      - action: light.turn_on
+        target:
+          entity_id: !input led
+        data:
+          rgb_color: "{{ color }}"
+          brightness: 255

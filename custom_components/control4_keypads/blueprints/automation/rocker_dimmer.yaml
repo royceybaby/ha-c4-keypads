@@ -1,0 +1,88 @@
+# control4_keypads blueprint v2
+blueprint:
+  name: Control4 keypad – rocker dims a light
+  description: >-
+    Tap up to turn the light on, tap down to turn it off, hold up or down to
+    dim smoothly. A light on the keypad's own loads fades in hardware; any
+    other light is stepped. Set the rocker's action to "None" in Control4
+    Keypads so the keypad doesn't also switch its own load.
+  domain: automation
+  source_url: https://github.com/Royceybaby/Control4KeypadsForHA/blob/main/custom_components/control4_keypads/blueprints/automation/rocker_dimmer.yaml
+  input:
+    keypad:
+      name: Keypad
+      selector:
+        device:
+          filter:
+            - integration: zha
+              model: C4-SDAPD240
+    rocker_name:
+      name: Rocker name
+      description: The rocker's name in Control4 Keypads (its triggers are "<name> up" / "<name> down").
+      default: Dimmer
+      selector:
+        text:
+    light:
+      name: Light
+      selector:
+        entity:
+          domain: light
+    full_range:
+      name: Full range time
+      description: Seconds a hold takes to go from off to full. Lower is faster.
+      default: 4
+      selector:
+        number:
+          min: 1
+          max: 20
+          step: 0.5
+          unit_of_measurement: s
+
+mode: queued
+max: 10
+max_exceeded: silent
+
+triggers:
+  - trigger: event
+    event_type: zha_event
+    event_data:
+      device_id: !input keypad
+
+variables:
+  rocker_name: !input rocker_name
+  light: !input light
+  full_range: !input full_range
+  full_range_ms: "{{ (full_range | float(4) * 1000) | int }}"
+  button: "{{ trigger.event.data.args.button | default('') }}"
+  command: "{{ trigger.event.data.command }}"
+  up: "{{ button == rocker_name ~ ' up' }}"
+  down: "{{ button == rocker_name ~ ' down' }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ up or down }}"
+
+actions:
+  - choose:
+      - conditions: "{{ up and command == 'press' and is_state(light, 'off') }}"
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: "{{ light }}"
+      - conditions: "{{ down and command == 'remote_button_short_press' }}"
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: "{{ light }}"
+      - conditions: "{{ command == 'remote_button_long_press' }}"
+        sequence:
+          - action: control4_keypads.start_dimming
+            data:
+              entity_id: "{{ light }}"
+              direction: "{{ 'up' if up else 'down' }}"
+              full_range_ms: "{{ full_range_ms }}"
+      - conditions: "{{ command == 'remote_button_long_release' }}"
+        sequence:
+          - action: control4_keypads.stop_dimming
+            data:
+              entity_id: "{{ light }}"

@@ -1,0 +1,12 @@
+Control4 Keypads for Home Assistant
+
+The ZHA quirks in custom_components/control4_keypads/quirks/ other than
+zz_c4_local_models.py come unchanged from the "control4" branch of
+https://github.com/wmariz/zha-device-handlers (commit a8fc4de, 2026-09-20),
+a fork of zigpy/zha-device-handlers, licensed under the Apache License 2.0.
+
+zz_c4_local_models.py (C4-SDAPD240 support) and the integration code were
+written for this project and are also released under the Apache License 2.0.
+
+Control4 is a trademark of Snap One, LLC. This project is not affiliated
+with or endorsed by Snap One or Control4.

@@ -1,0 +1,96 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Control4 Keypads",
+        "description": "Adds a keypad editor and services for Control4 Square keypads joined to ZHA. Found {count} supported keypad(s).\n\nAfter adding, open **C4 Keypads** in the sidebar (or press Configure here) to set up each keypad's caps and buttons.\n\nThe keypad support itself comes from the ZHA quirks bundled with this integration. If Home Assistant isn't loading them yet, a repair will tell you how to set that up."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Control4 Keypads is already set up.",
+      "zha_not_set_up": "Set up the Zigbee Home Automation (ZHA) integration first."
+    }
+  },
+  "selector": {
+    "direction": {
+      "options": {
+        "up": "Up",
+        "down": "Down"
+      }
+    },
+    "kind": {
+      "options": {
+        "s": "Set (0s)",
+        "g": "Get (0g)",
+        "i": "Interrupt (0i)"
+      }
+    }
+  },
+  "services": {
+    "start_dimming": {
+      "name": "Start dimming",
+      "description": "Start fading a light up or down until Stop dimming is called. Lights on a Control4 keypad use the keypad's own smooth fade; other lights are stepped.",
+      "fields": {
+        "entity_id": {
+          "name": "Light",
+          "description": "The light(s) to dim."
+        },
+        "direction": {
+          "name": "Direction",
+          "description": "Up or down."
+        },
+        "full_range_ms": {
+          "name": "Full range time",
+          "description": "How long a fade from off to full would take. Lower is faster."
+        }
+      }
+    },
+    "stop_dimming": {
+      "name": "Stop dimming",
+      "description": "Stop a fade started with Start dimming and keep the current level.",
+      "fields": {
+        "entity_id": {
+          "name": "Light",
+          "description": "The light(s) to stop."
+        }
+      }
+    },
+    "send_command": {
+      "name": "Send keypad command",
+      "description": "Advanced: send a raw Control4 command to a keypad, e.g. c4.dmx.led 00 05 ff0000.",
+      "fields": {
+        "device_id": {
+          "name": "Keypad",
+          "description": "The keypad."
+        },
+        "command": {
+          "name": "Command",
+          "description": "The command text without the 0s<seq> prefix."
+        },
+        "kind": {
+          "name": "Frame type",
+          "description": "Set, get or interrupt frame."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_a_keypad": {
+      "message": "That device is not a supported Control4 keypad."
+    }
+  },
+  "issues": {
+    "quirks_not_loaded": {
+      "title": "Control4 keypad quirks are not loaded",
+      "description": "ZHA isn't loading the Control4 quirks that come with this integration, so keypads won't work properly.\n\nAdd this to `configuration.yaml` (or change your existing `custom_quirks_path`), then restart Home Assistant:\n\n```yaml\nzha:\n  custom_quirks_path: {path}\n```"
+    },
+    "quirks_other_path": {
+      "title": "Control4 keypad quirks are loaded from another folder",
+      "description": "ZHA is loading Control4 quirks from `{current}` rather than from this integration. Settings made in Control4 Keypads may not apply, and updates won't reach your keypads.\n\nChange `custom_quirks_path` in `configuration.yaml` to:\n\n```yaml\nzha:\n  custom_quirks_path: {path}\n```\n\nThen restart Home Assistant. You can delete the old quirk files afterwards."
+    },
+    "quirks_outdated": {
+      "title": "Restart needed for the Control4 keypad quirks",
+      "description": "Control4 Keypads was updated, but ZHA is still running the old quirks. Restart Home Assistant to load the new ones."
+    }
+  }
+}

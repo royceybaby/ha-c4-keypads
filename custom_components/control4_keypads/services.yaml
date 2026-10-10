@@ -1,0 +1,58 @@
+start_dimming:
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: light
+          multiple: true
+    direction:
+      required: true
+      selector:
+        select:
+          options:
+            - "up"
+            - "down"
+          translation_key: direction
+    full_range_ms:
+      default: 4000
+      selector:
+        number:
+          min: 500
+          max: 60000
+          step: 100
+          unit_of_measurement: ms
+          mode: box
+
+stop_dimming:
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: light
+          multiple: true
+
+send_command:
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          filter:
+            - integration: zha
+              model: C4-SDAPD240
+    command:
+      required: true
+      example: "c4.dmx.led 00 05 ff0000"
+      selector:
+        text:
+    kind:
+      default: "s"
+      selector:
+        select:
+          options:
+            - "s"
+            - "g"
+            - "i"
+          translation_key: kind

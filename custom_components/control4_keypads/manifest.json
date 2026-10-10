@@ -1,0 +1,22 @@
+{
+  "domain": "control4_keypads",
+  "name": "Control4 Keypads",
+  "codeowners": [
+    "@Royceybaby"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http",
+    "panel_custom",
+    "websocket_api",
+    "zha"
+  ],
+  "documentation": "https://github.com/Royceybaby/Control4KeypadsForHA",
+  "integration_type": "hub",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/Royceybaby/Control4KeypadsForHA/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.2.0"
+}
