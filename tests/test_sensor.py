@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_mock_service
 
@@ -33,9 +34,14 @@ def quirks():
 
 async def test_ambient_sensor(hass, keypad, quirks):
     calls = async_mock_service(hass, "zha", "set_zigbee_cluster_attribute")
+    # a stray device left by 0.4.0, owned only by this integration
+    stray_entry = MockConfigEntry(domain=DOMAIN, data={}, options={"keypads": {}})
+    stray_entry.add_to_hass(hass)
     quirks._control4_keypads_info = {IEEE: {"ambient": 0x24}}
-    entry = MockConfigEntry(domain=DOMAIN, data={}, options={"keypads": {}})
-    entry.add_to_hass(hass)
+    entry = stray_entry
+    stray = dr.async_get(hass).async_get_or_create(
+        config_entry_id=entry.entry_id, identifiers={(DOMAIN, "stray")}, name="Control4 Keypads"
+    )
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
 
@@ -43,6 +49,7 @@ async def test_ambient_sensor(hass, keypad, quirks):
     assert entity_id
     ent = er.async_get(hass).async_get(entity_id)
     assert ent.device_id == keypad.id  # attached to the ZHA keypad device
+    assert dr.async_get(hass).async_get(stray.id) is None
     state = hass.states.get(entity_id)
     assert state.state == "14.1"
     assert state.attributes["unit_of_measurement"] == "%"
