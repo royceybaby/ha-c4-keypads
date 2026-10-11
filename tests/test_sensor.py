@@ -54,7 +54,7 @@ async def test_ambient_sensor(hass, keypad, quirks):
     assert state.state == "14.1"
     assert state.attributes["unit_of_measurement"] == "%"
     assert state.attributes["raw_level"] == 0x24
-    assert state.attributes["friendly_name"].endswith("Ambient light")
+    assert state.attributes["friendly_name"] == "Control4 C4-SDAPD240 Ambient light"
     assert [c.data["value"] for c in calls] == ["g:c4.dmx.amb 06"]
 
     quirks._control4_keypads_info[IEEE]["ambient"] = 0xFF

@@ -18,7 +18,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
@@ -81,13 +80,13 @@ async def async_setup_entry(
         hass, coordinator.async_refresh(), f"{DOMAIN} first ambient poll"
     )
     async_add_entities(
-        AmbientLightSensor(coordinator, ieee) for ieee in devices
+        AmbientLightSensor(coordinator, ieee, dev) for ieee, dev in devices.items()
     )
 
 
 def _remove_stray_devices(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Remove devices only this integration owns (0.4.0 created one per
-    keypad by mistake); our entities must live on the ZHA keypad devices."""
+    keypad by mistake); its entities live on the ZHA keypad devices."""
     reg = dr.async_get(hass)
     zha_entries = {e.entry_id for e in hass.config_entries.async_entries(ZHA_DOMAIN)}
     for dev in dr.async_entries_for_config_entry(reg, entry.entry_id):
@@ -105,14 +104,17 @@ class AmbientLightSensor(CoordinatorEntity[AmbientCoordinator], SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_suggested_display_precision = 0
 
-    def __init__(self, coordinator: AmbientCoordinator, ieee: str) -> None:
+    def __init__(
+        self, coordinator: AmbientCoordinator, ieee: str, device: dr.DeviceEntry
+    ) -> None:
         super().__init__(coordinator)
         self._ieee = ieee
         self._attr_unique_id = f"{ieee}-ambient_light"
-        # Attach to the keypad's existing ZHA device. Match on the Zigbee
-        # connection: newer HA versions keep another integration's
-        # identifiers apart, which would create a second, empty device.
-        self._attr_device_info = DeviceInfo(connections={(dr.CONNECTION_ZIGBEE, ieee)})
+        # Attach to the keypad's existing ZHA device the way helper
+        # integrations do (device_entry, no device_info). A device_info
+        # naming ZHA's identifiers or connection makes HA 2026.9 create a
+        # second, empty device for this integration instead.
+        self.device_entry = device
 
     @property
     def _raw(self) -> int | None:
