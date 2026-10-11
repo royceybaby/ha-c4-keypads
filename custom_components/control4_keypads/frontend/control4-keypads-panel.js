@@ -116,6 +116,10 @@ const STYLE = `
           border:1px solid var(--divider-color); padding:16px; margin-bottom:16px; }
   .top { display:flex; flex-wrap:wrap; gap:12px 24px; align-items:flex-end; }
   .top .meta { color:var(--secondary-text-color); font-size:14px; padding-bottom:8px; }
+  .top .devlink { margin-left:auto; padding-bottom:8px; }
+  a.link { display:inline-flex; align-items:center; gap:6px; height:38px; padding:0 16px; border-radius:19px; font-size:14px;
+           font-weight:500; text-decoration:none; color:var(--primary-color); border:1px solid var(--divider-color); }
+  a.link:hover { background:var(--secondary-background-color); }
   .main { display:grid; grid-template-columns:220px 1fr; gap:20px; align-items:start; }
   .preview { position:sticky; top:12px; text-align:center; }
   .preview svg { width:100%; max-width:220px; height:auto; }
@@ -260,6 +264,7 @@ class Control4KeypadsPanel extends HTMLElement {
         <div class="field" style="min-width:260px;flex:1;max-width:420px"><label>Keypad</label>
           <select id="keypad" ${this._dirty ? "disabled" : ""}>${options}</select></div>
         <div class="meta">${esc(kp.model)} · ${esc(kp.ieee)}${kp.buttons ? "" : " · not configured yet (showing the default layout)"}</div>
+        <div class="devlink"><a class="link" id="devlink" href="/config/devices/device/${encodeURIComponent(kp.device_id)}">Open device page →</a></div>
       </div>
       <div class="main">
         <div class="card preview"><div id="preview">${this._renderPreview()}</div>
@@ -416,6 +421,15 @@ class Control4KeypadsPanel extends HTMLElement {
 
   _onClick(ev) {
     const path = ev.composedPath();
+    const link = path.find((el) => el.id === "devlink");
+    if (link) {
+      // Navigate inside the HA app (keep ctrl/middle-click for a new tab).
+      if (ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+      ev.preventDefault();
+      history.pushState(null, "", link.getAttribute("href"));
+      window.dispatchEvent(new CustomEvent("location-changed", { detail: { replace: false } }));
+      return;
+    }
     const btn = path.find((el) => el.tagName === "BUTTON");
     if (btn?.id === "save") return this._save();
     if (btn?.id === "discard") { this._selectKeypad(this._ieee); this._msg = null; return this._render(); }
