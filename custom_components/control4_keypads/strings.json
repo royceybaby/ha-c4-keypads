@@ -65,7 +65,7 @@
         },
         "command": {
           "name": "Command",
-          "description": "The command text without the 0s<seq> prefix."
+          "description": "The command text only, without the frame type and sequence number (send c4.dmx.bmc 00, not 0g0042 c4.dmx.bmc 00)."
         },
         "kind": {
           "name": "Frame type",
