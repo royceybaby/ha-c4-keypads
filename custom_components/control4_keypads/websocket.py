@@ -22,6 +22,7 @@ from .const import (
     QUIRK_MODULE,
 )
 from .devices import device_ieee, keypad_devices
+from .firmware import keypad_info
 from .layout import LayoutError, preset_from_buttons, validate_buttons
 
 
@@ -49,6 +50,7 @@ def ws_list(hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg
         ieee = device_ieee(dev)
         area = areas.async_get_area(dev.area_id) if dev.area_id else None
         cfg = saved.get(ieee)
+        info = keypad_info(ieee)
         keypads.append(
             {
                 "device_id": dev.id,
@@ -57,6 +59,8 @@ def ws_list(hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg
                 "area": area.name if area else None,
                 "model": dev.model,
                 "buttons": cfg.get(CONF_BUTTONS) if cfg else None,
+                "firmware": info.get("firmware") or dev.sw_version,
+                "bootloader": info.get("bootloader"),
             }
         )
     keypads.sort(key=lambda k: ((k["area"] or "").lower(), k["name"].lower()))

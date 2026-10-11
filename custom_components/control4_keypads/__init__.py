@@ -18,6 +18,7 @@ from __future__ import annotations
 import logging
 import shutil
 import sys
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,7 @@ from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import ConfigType
 
@@ -41,6 +43,7 @@ from .const import (
     STORE_VERSION,
     ZHA_DOMAIN,
 )
+from .firmware import async_refresh as async_refresh_firmware
 from .layout import buttons_from_legacy_yaml, preset_from_buttons
 from .panel import async_register_panel, async_unregister_panel
 from .services import async_register_services
@@ -79,7 +82,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if changed:
         # The store was missing or out of date when ZHA built the keypads.
         await _async_reload_zha(hass)
+    _schedule_firmware_refresh(hass, entry, delay=25)
+    entry.async_on_unload(
+        async_track_time_interval(
+            hass,
+            lambda _now: _schedule_firmware_refresh(hass, entry, delay=0),
+            timedelta(hours=12),
+        )
+    )
     return True
+
+
+def _schedule_firmware_refresh(hass: HomeAssistant, entry: ConfigEntry, delay: float) -> None:
+    entry.async_create_background_task(
+        hass, async_refresh_firmware(hass, delay), f"{DOMAIN} firmware versions"
+    )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -92,6 +109,8 @@ async def _async_options_updated(hass: HomeAssistant, entry: ConfigEntry) -> Non
     _publish_layouts(entry.options.get(CONF_KEYPADS, {}))
     if await _async_write_store(hass, entry):
         await _async_reload_zha(hass)
+        # ZHA re-creates the device entries without a firmware version.
+        _schedule_firmware_refresh(hass, entry, delay=10)
 
 
 def _publish_layouts(keypads: dict[str, Any] | None) -> None:

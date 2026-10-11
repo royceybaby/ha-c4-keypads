@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-10-11
+
+- Firmware version: each keypad is asked for its firmware (`c4.sy.fwv`) and
+  bootloader (`c4.sy.blv`) versions. The firmware shows on the device page
+  and both show in the keypad editor and diagnostics. Quirk v9.
+- Keypad editor: "Open device page" link.
+- Sidebar entry renamed to "Control4 Keypads".
+
 ## 0.2.0 — 2026-10-10
 
 - New keypad editor panel (sidebar **Control4 Keypads**, also opened by

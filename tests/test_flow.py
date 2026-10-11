@@ -24,7 +24,7 @@ from .conftest import IEEE
 def fake_quirk():
     mod = types.ModuleType("zz_c4_local_models")
     mod.__file__ = str(QUIRKS_DIR / "zz_c4_local_models.py")
-    mod.QUIRK_VERSION = 8
+    mod.QUIRK_VERSION = 9
     with patch.dict(sys.modules, {"zz_c4_local_models": mod}):
         yield mod
 

@@ -1,4 +1,4 @@
-"""Control4 Keypads — SDAPD240 quirk (part of the "Control4 Keypads" integration) — v8.
+"""Control4 Keypads — SDAPD240 quirk (part of the "Control4 Keypads" integration) — v9.
 
 C4-SDAPD240  Control4 "Keypad Dual Load Dimmer"
              (Control4 driver: control4_lights_gen3_dualload, combo_dual_dimmer.c4i)
@@ -179,7 +179,7 @@ def _pct_to_zcl(level_pct: int) -> int:
     return round(level_pct * 254 / 100)
 
 
-QUIRK_VERSION = 8
+QUIRK_VERSION = 9
 
 
 def _config_dir() -> str:
@@ -408,6 +408,31 @@ class C4SDAPD240ButtonCluster(C4DimmerButtonCluster):
 
     BUTTON_MAP = SDAPD240_BUTTON_MAP
 
+    # Replies to `0g c4.sy.fwv` / `0g c4.sy.blv` (confirmed 2026-10-11:
+    # "0r004d 000 c4.sy.fwv 5.0.5", "0r004e 000 c4.sy.blv AT25DF041A-G3iDL-1.0.3")
+    _SYS_INFO = {"c4.sy.fwv": "firmware", "c4.sy.blv": "bootloader"}
+
+    def _process_raw(self, hdr, args):
+        raw = None
+        if isinstance(args, (bytes, bytearray)):
+            raw = bytes(args)
+        elif args and isinstance(args, (list, tuple)):
+            if isinstance(args[0], (bytes, bytearray, list, tuple)):
+                raw = bytes(args[0])
+            elif isinstance(args[0], int):
+                raw = bytes(args)
+        if raw:
+            line = raw.decode("ascii", errors="replace").split("\r")[0].strip()
+            parts = line.split()
+            if (
+                len(parts) >= 4
+                and parts[0].startswith("0r")
+                and parts[1] == "000"
+                and parts[2] in self._SYS_INFO
+            ):
+                _store_device_info(self.endpoint.device, self._SYS_INFO[parts[2]], " ".join(parts[3:]))
+        super()._process_raw(hdr, args)
+
     def _handle_state_announcement(self, namespace, data):
         if namespace == "c4.dmx.sc":
             # Scene/action notification that always follows c4.dmx.bp —
@@ -491,6 +516,24 @@ class C4SDAPD240ButtonCluster(C4DimmerButtonCluster):
         ):
             btn_cluster.set_pressed(False)
         _LOGGER.debug("C4 SDAPD240: %s -> %s (EP %d)", button_name, action, ep_id)
+
+
+def _store_device_info(device, key: str, value: str) -> None:
+    """Share firmware/bootloader versions with the integration (zigpy.quirks
+    is never re-imported, so this survives ZHA reloads)."""
+    import zigpy.quirks
+
+    info = getattr(zigpy.quirks, INFO_ATTR, None)
+    if not isinstance(info, dict):
+        info = {}
+        setattr(zigpy.quirks, INFO_ATTR, info)
+    entry = info.setdefault(str(device.ieee).lower(), {})
+    if entry.get(key) != value:
+        entry[key] = value
+        _LOGGER.info("C4 SDAPD240 [%s]: %s %s", device.ieee, key, value)
+
+
+INFO_ATTR = "_control4_keypads_info"
 
 
 # ---------------------------------------------------------------------------
@@ -882,7 +925,7 @@ else:
 
     _C4_MODEL_QUIRK_MAP["C4-SDAPD240"] = Control4SDAPD240
     _LOGGER.warning(
-        "C4 local: C4-SDAPD240 registered as %s v8 (2 loads, configurable "
+        "C4 local: C4-SDAPD240 registered as %s v9 (2 loads, configurable "
         "buttons/actions/LEDs from %s, raw EP %d)",
         Control4SDAPD240.__name__, STORE_FILE, C4_RAW_CMD_EP,
     )

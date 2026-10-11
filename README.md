@@ -115,6 +115,14 @@ integration starts:
 | `control4_keypads.stop_dimming` | Stop the fade and keep the current level. |
 | `control4_keypads.send_command` | Advanced: send a raw Control4 command, e.g. `c4.dmx.led 00 05 ff0000`. |
 
+## Firmware
+
+The integration reads each keypad's firmware version and shows it on the
+keypad's device page and in the keypad editor (for example `5.0.5`). It
+can't update the firmware. Control4 delivers firmware through its own
+controllers using a proprietary update process, and the firmware images
+aren't public.
+
 ## How it works
 
 Control4 devices speak an ASCII protocol over Zigbee (profile `0xC25C`).

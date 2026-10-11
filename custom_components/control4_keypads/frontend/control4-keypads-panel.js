@@ -263,7 +263,7 @@ class Control4KeypadsPanel extends HTMLElement {
       <div class="card top">
         <div class="field" style="min-width:260px;flex:1;max-width:420px"><label>Keypad</label>
           <select id="keypad" ${this._dirty ? "disabled" : ""}>${options}</select></div>
-        <div class="meta">${esc(kp.model)} · ${esc(kp.ieee)}${kp.buttons ? "" : " · not configured yet (showing the default layout)"}</div>
+        <div class="meta">${esc(kp.model)} · ${esc(kp.ieee)}${kp.firmware ? ` · firmware ${esc(kp.firmware)}` : ""}${kp.bootloader ? `<span title="Bootloader"> · bootloader ${esc(kp.bootloader)}</span>` : ""}${kp.buttons ? "" : " · not configured yet (showing the default layout)"}</div>
         <div class="devlink"><a class="link" id="devlink" href="/config/devices/device/${encodeURIComponent(kp.device_id)}">Open device page →</a></div>
       </div>
       <div class="main">
