@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Control4 Keypads",
-        "description": "Adds a keypad editor and services for Control4 Square keypads joined to ZHA. Found {count} supported keypad(s).\n\nAfter adding, open **C4 Keypads** in the sidebar (or press Configure here) to set up each keypad's caps and buttons.\n\nThe keypad support itself comes from the ZHA quirks bundled with this integration. If Home Assistant isn't loading them yet, a repair will tell you how to set that up."
+        "description": "Adds a keypad editor and services for Control4 Square keypads joined to ZHA. Found {count} supported keypad(s).\n\nAfter adding, open **Control4 Keypads** in the sidebar (or press Configure here) to set up each keypad's caps and buttons.\n\nThe keypad support itself comes from the ZHA quirks bundled with this integration. If Home Assistant isn't loading them yet, a repair will tell you how to set that up."
       }
     },
     "abort": {

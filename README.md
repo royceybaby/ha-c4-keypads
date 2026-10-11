@@ -61,7 +61,7 @@ Keep the coordinator within a couple of metres while pairing.
 
 ## Configuring a keypad
 
-Open **C4 Keypads** in the sidebar, or press **Configure** on the integration.
+Open **Control4 Keypads** in the sidebar, or press **Configure** on the integration.
 
 1. Pick the keypad. The list shows its area too.
 2. Work down the six rows, top to bottom. For the cap in each row, choose:

@@ -3,7 +3,7 @@
 The heavy lifting happens in the ZHA quirks shipped in ./quirks (loaded by
 ZHA through ``zha: custom_quirks_path``). This integration adds:
 
-* a keypad editor panel (sidebar "C4 Keypads") to describe each keypad's caps
+* a keypad editor panel (sidebar "Control4 Keypads") to describe each keypad's caps
   row by row and set each button's behaviour; it is saved to
   ``.storage/control4_keypads`` where the quirk reads it, and ZHA is reloaded
   so the change applies at once;

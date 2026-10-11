@@ -35,7 +35,7 @@ async def async_register_panel(hass: HomeAssistant) -> None:
         hass,
         frontend_url_path=PANEL_PATH,
         webcomponent_name="control4-keypads-panel",
-        sidebar_title="C4 Keypads",
+        sidebar_title="Control4 Keypads",
         sidebar_icon="mdi:light-switch",
         module_url=f"{STATIC_URL}/{PANEL_JS}?v={version}",
         require_admin=True,

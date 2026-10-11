@@ -1,7 +1,7 @@
 """Config flow for Control4 Keypads.
 
 Keypads themselves are configured in the integration's own panel (sidebar
-"C4 Keypads", or Configure on the integration), which can show the keypad
+"Control4 Keypads", or Configure on the integration), which can show the keypad
 and disable rows hidden under a multi-row cap as you edit.
 """
 

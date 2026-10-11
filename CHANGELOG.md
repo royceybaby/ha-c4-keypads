@@ -2,7 +2,7 @@
 
 ## 0.2.0 — 2026-10-10
 
-- New keypad editor panel (sidebar **C4 Keypads**, also opened by
+- New keypad editor panel (sidebar **Control4 Keypads**, also opened by
   **Configure** on the integration). It has six rows, each with its own
   cap type, rows under a multi-row cap are disabled, and a live picture of
   the keypad updates as you edit. It replaces the cap-layout dropdown in the
