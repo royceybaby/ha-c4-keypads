@@ -1,4 +1,4 @@
-# control4_keypads blueprint v2
+# control4_keypads blueprint v3
 blueprint:
   name: Control4 keypad – button LED shows an entity's state
   description: >-
@@ -6,7 +6,7 @@ blueprint:
     (a light, switch, scene helper, media player…). Set the button's LED to
     "Home Assistant controls it" in Control4 Keypads first.
   domain: automation
-  source_url: https://github.com/Royceybaby/Control4KeypadsForHA/blob/main/custom_components/control4_keypads/blueprints/automation/led_follows_entity.yaml
+  source_url: https://github.com/royceybaby/ha-c4-keypads/blob/main/custom_components/control4_keypads/blueprints/automation/led_follows_entity.yaml
   input:
     led:
       name: Button LED

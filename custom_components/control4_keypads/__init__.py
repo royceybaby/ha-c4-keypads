@@ -180,7 +180,7 @@ def _check_quirks(hass: HomeAssistant) -> None:
         severity=ir.IssueSeverity.ERROR if issue == "quirks_not_loaded" else ir.IssueSeverity.WARNING,
         translation_key=issue,
         translation_placeholders=placeholders,
-        learn_more_url="https://github.com/Royceybaby/Control4KeypadsForHA#installation",
+        learn_more_url="https://github.com/royceybaby/ha-c4-keypads#installation",
     )
 
 

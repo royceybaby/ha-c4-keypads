@@ -25,7 +25,7 @@ but this integration's configuration screens only cover the SDAPD240 for now.
 ## Installation
 
 1. **HACS** → three-dot menu → **Custom repositories** → add
-   `https://github.com/Royceybaby/Control4KeypadsForHA`, type **Integration**.
+   `https://github.com/royceybaby/ha-c4-keypads`, type **Integration**.
    Install **Control4 Keypads**.
 2. **Tell ZHA to load the bundled quirks.** Add this to `configuration.yaml`,
    or change your existing `custom_quirks_path`:

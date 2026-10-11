@@ -2,7 +2,7 @@
   "domain": "control4_keypads",
   "name": "Control4 Keypads",
   "codeowners": [
-    "@Royceybaby"
+    "@royceybaby"
   ],
   "config_flow": true,
   "dependencies": [
@@ -12,10 +12,10 @@
     "websocket_api",
     "zha"
   ],
-  "documentation": "https://github.com/Royceybaby/Control4KeypadsForHA",
+  "documentation": "https://github.com/royceybaby/ha-c4-keypads",
   "integration_type": "hub",
   "iot_class": "local_push",
-  "issue_tracker": "https://github.com/Royceybaby/Control4KeypadsForHA/issues",
+  "issue_tracker": "https://github.com/royceybaby/ha-c4-keypads/issues",
   "requirements": [],
   "single_config_entry": true,
   "version": "0.2.0"

@@ -13,7 +13,7 @@
 - Caps are single, double or triple (plus the up / down rocker in row 6);
   taller caps are rejected.
 - Default names follow the row ("Button 3" for a cap starting in row 3).
-- Manifest owner and links point at github.com/Royceybaby/Control4KeypadsForHA.
+- Manifest owner and links point at github.com/royceybaby/ha-c4-keypads.
 
 ## 0.1.0 — 2026-10-10
 
