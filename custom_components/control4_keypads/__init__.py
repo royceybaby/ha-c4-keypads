@@ -52,6 +52,7 @@ from .websocket import async_register_websocket
 _LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+PLATFORMS = ["sensor"]
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -78,6 +79,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.async_add_executor_job(_install_blueprints, Path(hass.config.path("blueprints")))
 
     await async_register_panel(hass)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     if changed:
         # The store was missing or out of date when ZHA built the keypads.
@@ -102,7 +104,7 @@ def _schedule_firmware_refresh(hass: HomeAssistant, entry: ConfigEntry, delay: f
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN]["dimmer"].cancel_all()
     async_unregister_panel(hass)
-    return True
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
 async def _async_options_updated(hass: HomeAssistant, entry: ConfigEntry) -> None:

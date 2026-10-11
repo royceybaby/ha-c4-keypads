@@ -92,5 +92,12 @@
       "title": "Restart needed for the Control4 keypad quirks",
       "description": "Control4 Keypads was updated, but ZHA is still running the old quirks. Restart Home Assistant to load the new ones."
     }
+  },
+  "entity": {
+    "sensor": {
+      "ambient_light": {
+        "name": "Ambient light"
+      }
+    }
   }
 }

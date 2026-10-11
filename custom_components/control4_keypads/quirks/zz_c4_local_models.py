@@ -1,4 +1,4 @@
-"""Control4 Keypads — SDAPD240 quirk (part of the "Control4 Keypads" integration) — v9.
+"""Control4 Keypads — SDAPD240 quirk (part of the "Control4 Keypads" integration) — v10.
 
 C4-SDAPD240  Control4 "Keypad Dual Load Dimmer"
              (Control4 driver: control4_lights_gen3_dualload, combo_dual_dimmer.c4i)
@@ -179,7 +179,7 @@ def _pct_to_zcl(level_pct: int) -> int:
     return round(level_pct * 254 / 100)
 
 
-QUIRK_VERSION = 9
+QUIRK_VERSION = 10
 
 
 def _config_dir() -> str:
@@ -431,6 +431,19 @@ class C4SDAPD240ButtonCluster(C4DimmerButtonCluster):
                 and parts[2] in self._SYS_INFO
             ):
                 _store_device_info(self.endpoint.device, self._SYS_INFO[parts[2]], " ".join(parts[3:]))
+            elif (
+                len(parts) == 5
+                and parts[0].startswith("0r")
+                and parts[1] == "000"
+                and parts[2] == "c4.dmx.amb"
+            ):
+                # Reply to `0g c4.dmx.amb 06` (the only amb index that answers
+                # with two values): ambient light 0-255, e.g. "c4.dmx.amb 24 24";
+                # 0xff under a torch, ~0x0d covered (confirmed 2026-10-11).
+                try:
+                    _store_device_info(self.endpoint.device, "ambient", int(parts[3], 16))
+                except ValueError:
+                    pass
         super()._process_raw(hdr, args)
 
     def _handle_state_announcement(self, namespace, data):
@@ -530,7 +543,9 @@ def _store_device_info(device, key: str, value: str) -> None:
     entry = info.setdefault(str(device.ieee).lower(), {})
     if entry.get(key) != value:
         entry[key] = value
-        _LOGGER.info("C4 SDAPD240 [%s]: %s %s", device.ieee, key, value)
+        (_LOGGER.debug if key == "ambient" else _LOGGER.info)(
+            "C4 SDAPD240 [%s]: %s %s", device.ieee, key, value
+        )
 
 
 INFO_ATTR = "_control4_keypads_info"
@@ -622,8 +637,9 @@ class C4RawCommandCluster(CustomCluster):
             device = self.endpoint.device
             seq = next_c4_seq(device)
             cmd = f"0{kind}{seq:04x} {body}"
-            _LOGGER.warning(
-                "C4 raw test [%s]: sending %r on profile 0x%04X",
+            # Reads (version / light level polls) are routine; writes are notable.
+            (_LOGGER.debug if kind == "g" else _LOGGER.warning)(
+                "C4 raw command [%s]: sending %r on profile 0x%04X",
                 device.ieee, cmd, profile,
             )
             try:
@@ -925,7 +941,7 @@ else:
 
     _C4_MODEL_QUIRK_MAP["C4-SDAPD240"] = Control4SDAPD240
     _LOGGER.warning(
-        "C4 local: C4-SDAPD240 registered as %s v9 (2 loads, configurable "
+        "C4 local: C4-SDAPD240 registered as %s v10 (2 loads, configurable "
         "buttons/actions/LEDs from %s, raw EP %d)",
         Control4SDAPD240.__name__, STORE_FILE, C4_RAW_CMD_EP,
     )

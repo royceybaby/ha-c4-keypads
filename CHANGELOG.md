@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 — 2026-10-11
+
+- New **Ambient light** sensor on each keypad, as a % of the sensor's range
+  (raw 0–255 in the `raw_level` attribute). It reads the keypad's built-in
+  light sensor (`c4.dmx.amb 06`) once a minute. It's a relative level, not
+  calibrated lux. Quirk v10.
+- Routine keypad reads (light level, versions) are only logged at debug
+  level.
+
 ## 0.3.0 — 2026-10-11
 
 - Firmware version: each keypad is asked for its firmware (`c4.sy.fwv`) and

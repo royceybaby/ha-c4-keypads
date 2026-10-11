@@ -115,6 +115,15 @@ integration starts:
 | `control4_keypads.stop_dimming` | Stop the fade and keep the current level. |
 | `control4_keypads.send_command` | Advanced: send a raw Control4 command, e.g. `c4.dmx.led 00 05 ff0000`. |
 
+## Ambient light
+
+Each keypad has a light sensor, which it uses to dim its button LEDs in the
+dark. The integration adds an **Ambient light** sensor to every keypad. It's a
+percentage of the sensor's range, read once a minute. Normal room light is
+about 15%, a torch held against it reads 100%, and covering it brings it down
+to about 5%. It's a relative level rather than lux, so use it for things like
+"only when it's dark here" in automations.
+
 ## Firmware
 
 The integration reads each keypad's firmware version and shows it on the

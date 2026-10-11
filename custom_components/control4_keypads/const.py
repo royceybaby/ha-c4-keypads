@@ -14,7 +14,7 @@ STORE_VERSION = 1
 
 QUIRKS_DIR = Path(__file__).parent / "quirks"
 QUIRK_MODULE = "zz_c4_local_models"
-REQUIRED_QUIRK_VERSION = 9
+REQUIRED_QUIRK_VERSION = 10
 # Attribute on zigpy.quirks where the current layouts are shared with the quirk
 SHARED_LAYOUTS_ATTR = "_control4_keypads_layouts"
 # ...and where the quirk shares firmware / bootloader versions it has read
